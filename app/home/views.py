@@ -8,7 +8,7 @@ import random
 
 
 from . import home
-from .forms import DeveloperForm, ApplicationForm
+from .forms import DeveloperForm, ApplicationForm, UserForm, PurchaseForm
 
 
 @home.route('/')
@@ -54,7 +54,7 @@ def list_developers():
                            developers=developers, title="Developers")
 
 
-@home.route('/home/developers/add', methods=['GET', 'POST'])
+@home.route('/developers/add', methods=['GET', 'POST'])
 @login_required
 def add_developer():
     """
@@ -106,7 +106,7 @@ def add_developer():
 
 
 
-@home.route('/home/developers/edit/<int:developer_id>', methods=['GET', 'POST'])
+@home.route('/developers/edit/<int:developer_id>', methods=['GET', 'POST'])
 @login_required
 def edit_developer(developer_id):
     """
@@ -173,7 +173,7 @@ def edit_developer(developer_id):
                            developer=developer, title="Edit developer")
 
 
-@home.route('/home/developers/delete/<int:developer_id>', methods=['GET', 'POST'])
+@home.route('/developers/delete/<int:developer_id>', methods=['GET', 'POST'])
 @login_required
 def delete_developer(developer_id):
     """
@@ -203,7 +203,7 @@ def delete_developer(developer_id):
 
 
 # developer Views
-@home.route('/home/applications', methods=['GET', 'POST'])
+@home.route('/applications', methods=['GET', 'POST'])
 @login_required
 def list_applications():
     """
@@ -225,7 +225,7 @@ def list_applications():
                            applications=applications, title="Applications")
 
 
-@home.route('/home/applications/add/dev', methods=['GET', 'POST'])
+@home.route('/applications/add/dev', methods=['GET', 'POST'])
 @login_required
 def add_app_under_dev():
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
@@ -288,7 +288,7 @@ def add_application(developer_id):
                            add_app=add_app, form=form,
                            title="Add Application")
 
-@home.route('/home/applications/delete/<string:package_name>', methods=['GET', 'POST'])
+@home.route('/applications/delete/<string:package_name>', methods=['GET', 'POST'])
 @login_required
 def delete_app(package_name):
     """
@@ -317,7 +317,7 @@ def delete_app(package_name):
     return redirect(url_for('home.list_applications'))
 
 
-@home.route('/home/applications/edit/<int:developer_id>/<string:package_name>,', methods=['GET', 'POST'])
+@home.route('/applications/edit/<int:developer_id>/<string:package_name>,', methods=['GET', 'POST'])
 @login_required
 def edit_app(developer_id, package_name):
     """
@@ -326,7 +326,7 @@ def edit_app(developer_id, package_name):
     add_app = False
 
     form = ApplicationForm()
-    new_package_name = None
+
     if form.validate_on_submit():
         try:
             #print(pk)
@@ -348,7 +348,6 @@ def edit_app(developer_id, package_name):
             db.commit()
             db.close()
 
-            new_package_name = form.package_name.data
             flash('You have successfully Edited the App information.')
             print("COMPLETED!!!")
         except (MySQLdb.Error, MySQLdb.Warning) as e:
@@ -381,3 +380,313 @@ def edit_app(developer_id, package_name):
     return render_template('home/applications/application.html', action="Edit",
                            add_app=add_app, form=form,
                            application=application, title="Edit Application")
+
+
+# User Views
+@home.route('/users', methods=['GET', 'POST'])
+@login_required
+def list_users():
+    """
+    List all developers
+    """
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from users;"
+    cur.execute(query_string)
+
+    users = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('home/users/users.html',
+                           users=users, title="Users")
+
+
+@home.route('/users/add', methods=['GET', 'POST'])
+@login_required
+def add_user():
+    """
+    Add a developer to the database
+    """
+    add_user = True
+
+    form = UserForm()
+
+    if form.validate_on_submit():
+        try:
+            #print(pk)
+            # add developer to the database
+            db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+            cur = db.cursor()
+
+            query_string = "INSERT INTO users \
+                            VALUES(%s, %s, %s, %s, %s, %s, %s, %s);"
+
+            cur.execute(query_string, (form.apple_id.data, 
+                                                                       form.name.data, 
+                                                                       form.email.data,
+                                                                       form.country.data,
+                                                                       form.address.data,
+                                                                       form.device.data,
+                                                                       form.credit_card_num.data,
+                                                                       form.age.data))
+            db.commit()
+            db.close()
+
+            flash('You have successfully added a new user.')
+            #print("COMPLETED!!!")
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            # in case developer name already exists
+            flash('Error: User already exists.')
+
+            # redirect to developers page
+        return redirect(url_for('home.list_users'))
+
+    #flash("DonE!!!!")
+    # load developer template
+    return render_template('home/users/user.html', action="Add",
+                           add_user=add_user, form=form,
+                           title="Add User")
+
+
+
+
+
+@home.route('/users/edit/<string:apple_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(apple_id):
+    """
+    Edit a developer
+    """
+    add_user = False
+
+    form = UserForm()
+
+    if form.validate_on_submit():
+        try:
+            #print(pk)
+            # add developer to the database
+            db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+            cur = db.cursor()
+
+            query_string = "UPDATE users SET \
+                            apple_id = %s, name = %s, email = %s, country = %s, address = %s, \
+                            device = %s, credit_card_num = %s, age = %s \
+                            WHERE apple_id = %s"
+            cur.execute(query_string, ( form.apple_id.data,
+                                        form.name.data, 
+                                        form.email.data,
+                                        form.country.data,
+                                        form.address.data,
+                                        form.device.data,
+                                        form.credit_card_num.data,
+                                        form.age.data,
+                                        apple_id))
+            db.commit()
+            db.close()
+
+            flash('You have successfully Edited the User information.')
+            #print("COMPLETED!!!")
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            # in case developer name already exists
+            flash('Error: Could Not Update User Information')
+
+            # redirect to developers page
+        return redirect(url_for('home.list_users'))
+
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from users WHERE apple_id = '{}';".format(apple_id)
+    cur.execute(query_string)
+
+    user = cur.fetchone()
+
+    db.close()
+
+    print("ROW:", user)
+    
+    form.age.data = user[7]
+    form.credit_card_num.data = user[6]
+    form.device.data = user[5]
+    form.address.data = user[4]
+    form.country.data = user[3]
+    form.email.data = user[2]
+    form.name.data = user[1]
+    form.apple_id.data = user[0]
+
+    return render_template('home/users/user.html', action="Edit",
+                           add_user=add_user, form=form,
+                           user=user, title="Edit User")
+
+
+@home.route('/users/delete/<string:apple_id>', methods=['GET', 'POST'])
+@login_required
+def delete_user(apple_id):
+    """
+    Delete a developer from the database
+    """
+    try:
+        #print(pk)
+        # add developer to the database
+        db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+        cur = db.cursor()
+
+        query_string = "DELETE FROM users WHERE apple_id = '{}'".format(apple_id);
+
+        cur.execute(query_string)
+        db.commit()
+        db.close()
+
+        flash('You have successfully deleted a user.')
+        #print("COMPLETED!!!")
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        # in case developer name already exists
+        flash('Error: User Doesnt exists.')
+    # redirect to the developers page
+    return redirect(url_for('home.list_users'))
+
+
+@home.route('/purchases', methods=['GET', 'POST'])
+@login_required
+def list_purchases():
+    """
+    List all developers
+    """
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from purchases;"
+    cur.execute(query_string)
+
+    purchases = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('home/purchases/purchases.html',
+                           purchases=purchases, title="Purchases")
+
+
+@home.route('/purchases/add/user', methods=['GET', 'POST'])
+@login_required
+def add_purchase_under_user():
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from users;"
+    cur.execute(query_string)
+
+    users = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('/home/purchases/users_compact.html',
+                           users=users, title="Users")
+
+
+@home.route('/purchases/add/user/<string:apple_id>/app', methods=['GET', 'POST'])
+@login_required
+def add_purchase_under_user_app(apple_id):
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from applications;"
+    cur.execute(query_string)
+
+    applications = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('/home/purchases/applications_compact.html',
+                           applications=applications, apple_id=apple_id, title="applications")
+
+
+@home.route('/purchases/add/user/<string:apple_id>/app/<string:package_name>/<float:price>', methods=['GET', 'POST'])
+@login_required
+def add_purchase(apple_id, package_name, price):
+    """
+    Add a developer to the database
+    """
+    add_purchase = True
+
+    form = PurchaseForm()
+
+    if form.validate_on_submit():
+        try:
+            order_id = random.getrandbits(32)
+
+            db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+            cur = db.cursor()
+
+            query_string = "INSERT INTO purchases \
+                            VALUES(%s, %s, %s, %s, %s);"
+
+            cur.execute(query_string, (order_id, 
+                                       apple_id,
+                                       package_name,
+                                       price,
+                                       form.purchase_date.data.strftime('%Y-%m-%d')))
+            db.commit()
+            db.close()
+
+            flash('You have successfully added a new purchase.')
+            print("COMPLETED!!!")
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            # in case developer name already exists
+            flash('Error: Purchase already exists.')
+
+            # redirect to developers page
+        return redirect(url_for('home.list_purchases'))
+
+    #flash("DonE!!!!")
+    # load developer template
+    return render_template('home/purchases/purchase.html', action="Add",
+                           add_purchase=add_purchase, form=form,
+                           title="Add Purchase")
+
+
+@home.route('/purchases/delete/<int:order_id>', methods=['GET', 'POST'])
+@login_required
+def delete_purchase(order_id):
+    """
+    Delete a developer from the database
+    """
+    try:
+        #print(pk)
+        # add developer to the database
+        db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+        cur = db.cursor()
+
+        query_string = "DELETE FROM purchases WHERE order_id={}".format(order_id);
+
+        cur.execute(query_string)
+        db.commit()
+        db.close()
+
+        flash('You have successfully deleted a purchase.')
+        #print("COMPLETED!!!")
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        # in case developer name already exists
+        flash('Error: Purchase Doesnt exists.')
+    # redirect to the developers page
+    return redirect(url_for('home.list_purchases'))

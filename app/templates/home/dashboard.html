@@ -25,8 +25,16 @@
                                     <i class="fa fa-pencil"></i> View Applications 
                                 </a> 
                             </th>
-                              <th width="25%"> View Users </th>
-                              <th width="25%"> View Purchases </th>
+                            <th width="25%">
+                                <a href="{{ url_for('home.list_users') }}">
+                                    <i class="fa fa-pencil"></i> View Users 
+                                </a> 
+                            </th>
+                            <th width="25%">
+                                <a href="{{ url_for('home.list_purchases') }}">
+                                    <i class="fa fa-pencil"></i> View Purchases 
+                                </a> 
+                            </th>
                               <th width="25%"> View Reviews </th>
                             </tr>
                           </thead>
