@@ -67,7 +67,7 @@ def add_developer():
     if form.validate_on_submit():
         try:
             pk = random.getrandbits(32)
-            #print(pk)
+
             # add developer to the database
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -87,7 +87,7 @@ def add_developer():
             db.close()
 
             flash('You have successfully added a new developer.')
-            #print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
             # in case developer name already exists
@@ -96,7 +96,6 @@ def add_developer():
             # redirect to developers page
         return redirect(url_for('home.list_developers'))
 
-    #flash("DonE!!!!")
     # load developer template
     return render_template('home/developers/developer.html', action="Add",
                            add_developer=add_developer, form=form,
@@ -118,7 +117,7 @@ def edit_developer(developer_id):
 
     if form.validate_on_submit():
         try:
-            #print(pk)
+   
             # add developer to the database
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -139,13 +138,12 @@ def edit_developer(developer_id):
             db.close()
 
             flash('You have successfully Edited the developer information.')
-            #print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+            
             flash('Error: Could Not Update Developer Information')
 
-            # redirect to developers page
         return redirect(url_for('home.list_developers'))
 
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
@@ -180,8 +178,7 @@ def delete_developer(developer_id):
     Delete a developer from the database
     """
     try:
-        #print(pk)
-        # add developer to the database
+
         db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
         cur = db.cursor()
@@ -193,7 +190,7 @@ def delete_developer(developer_id):
         db.close()
 
         flash('You have successfully deleted a developer.')
-        #print("COMPLETED!!!")
+
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
         # in case developer name already exists
@@ -202,12 +199,12 @@ def delete_developer(developer_id):
     return redirect(url_for('home.list_developers'))
 
 
-# developer Views
+# Application Views
 @home.route('/applications', methods=['GET', 'POST'])
 @login_required
 def list_applications():
     """
-    List all developers
+    List all applications
     """
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -248,7 +245,7 @@ def add_app_under_dev():
 @login_required
 def add_application(developer_id):
     """
-    Add a developer to the database
+    Add a application to the database
     """
     add_app = True
 
@@ -273,17 +270,16 @@ def add_application(developer_id):
             db.close()
 
             flash('You have successfully added a new Application.')
-            print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+
             flash('Error: Application already exists.')
 
-            # redirect to developers page
+  
         return redirect(url_for('home.list_applications'))
 
-    #flash("DonE!!!!")
-    # load developer template
+
     return render_template('home/applications/application.html', action="Add",
                            add_app=add_app, form=form,
                            title="Add Application")
@@ -292,11 +288,10 @@ def add_application(developer_id):
 @login_required
 def delete_app(package_name):
     """
-    Delete a developer from the database
+    Delete a application from the database
     """
     try:
-        #print(pk)
-        # add developer to the database
+
         db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
         cur = db.cursor()
@@ -308,12 +303,12 @@ def delete_app(package_name):
         db.close()
 
         flash('You have successfully deleted an application.')
-        #print("COMPLETED!!!")
+   
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
-        # in case developer name already exists
+    
         flash('Error: Application Doesnt exists.')
-    # redirect to the developers page
+    
     return redirect(url_for('home.list_applications'))
 
 
@@ -321,7 +316,7 @@ def delete_app(package_name):
 @login_required
 def edit_app(developer_id, package_name):
     """
-    Edit a developer
+    Edit an application
     """
     add_app = False
 
@@ -329,8 +324,7 @@ def edit_app(developer_id, package_name):
 
     if form.validate_on_submit():
         try:
-            #print(pk)
-            # add developer to the database
+
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
             cur = db.cursor()
@@ -352,10 +346,9 @@ def edit_app(developer_id, package_name):
             print("COMPLETED!!!")
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+  
             flash('Error: Could Not Update App Information')
 
-            # redirect to developers page
         return redirect(url_for('home.list_applications'))
 
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
@@ -369,7 +362,6 @@ def edit_app(developer_id, package_name):
 
     db.close()
 
-    print("ROW:", application)
     
     form.package_name.data = application[0]
     form.name.data = application[2]
@@ -387,7 +379,7 @@ def edit_app(developer_id, package_name):
 @login_required
 def list_users():
     """
-    List all developers
+    List all users
     """
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -409,7 +401,7 @@ def list_users():
 @login_required
 def add_user():
     """
-    Add a developer to the database
+    Add a users to the database
     """
     add_user = True
 
@@ -417,8 +409,7 @@ def add_user():
 
     if form.validate_on_submit():
         try:
-            #print(pk)
-            # add developer to the database
+
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
             cur = db.cursor()
@@ -438,17 +429,16 @@ def add_user():
             db.close()
 
             flash('You have successfully added a new user.')
-            #print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+            # in case users name already exists
             flash('Error: User already exists.')
 
             # redirect to developers page
         return redirect(url_for('home.list_users'))
 
-    #flash("DonE!!!!")
-    # load developer template
+    # load users template
     return render_template('home/users/user.html', action="Add",
                            add_user=add_user, form=form,
                            title="Add User")
@@ -461,7 +451,7 @@ def add_user():
 @login_required
 def edit_user(apple_id):
     """
-    Edit a developer
+    Edit a users
     """
     add_user = False
 
@@ -469,8 +459,7 @@ def edit_user(apple_id):
 
     if form.validate_on_submit():
         try:
-            #print(pk)
-            # add developer to the database
+
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
             cur = db.cursor()
@@ -492,13 +481,13 @@ def edit_user(apple_id):
             db.close()
 
             flash('You have successfully Edited the User information.')
-            #print("COMPLETED!!!")
+  
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+            # in case users name already exists
             flash('Error: Could Not Update User Information')
 
-            # redirect to developers page
+        # redirect to users page
         return redirect(url_for('home.list_users'))
 
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
@@ -512,7 +501,6 @@ def edit_user(apple_id):
 
     db.close()
 
-    print("ROW:", user)
     
     form.age.data = user[7]
     form.credit_card_num.data = user[6]
@@ -532,11 +520,10 @@ def edit_user(apple_id):
 @login_required
 def delete_user(apple_id):
     """
-    Delete a developer from the database
+    Delete a users from the database
     """
     try:
-        #print(pk)
-        # add developer to the database
+     
         db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
         cur = db.cursor()
@@ -548,12 +535,12 @@ def delete_user(apple_id):
         db.close()
 
         flash('You have successfully deleted a user.')
-        #print("COMPLETED!!!")
+
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
-        # in case developer name already exists
+        # in case users name already exists
         flash('Error: User Doesnt exists.')
-    # redirect to the developers page
+    # redirect to the users page
     return redirect(url_for('home.list_users'))
 
 
@@ -561,7 +548,7 @@ def delete_user(apple_id):
 @login_required
 def list_purchases():
     """
-    List all developers
+    List all purchases
     """
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -624,7 +611,7 @@ def add_purchase_under_user_app(apple_id):
 @login_required
 def add_purchase(apple_id, package_name, price):
     """
-    Add a developer to the database
+    Add a purchase to the database
     """
     add_purchase = True
 
@@ -650,17 +637,16 @@ def add_purchase(apple_id, package_name, price):
             db.close()
 
             flash('You have successfully added a new purchase.')
-            print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+            # in case purchase already exists
             flash('Error: Purchase already exists.')
 
-            # redirect to developers page
+        # redirect to purchases page
         return redirect(url_for('home.list_purchases'))
 
-    #flash("DonE!!!!")
-    # load developer template
+
     return render_template('home/purchases/purchase.html', action="Add",
                            add_purchase=add_purchase, form=form,
                            title="Add Purchase")
@@ -670,11 +656,9 @@ def add_purchase(apple_id, package_name, price):
 @login_required
 def delete_purchase(order_id):
     """
-    Delete a developer from the database
+    Delete a purchase from the database
     """
     try:
-        #print(pk)
-        # add developer to the database
         db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
         cur = db.cursor()
@@ -686,12 +670,12 @@ def delete_purchase(order_id):
         db.close()
 
         flash('You have successfully deleted a purchase.')
-        #print("COMPLETED!!!")
+
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
-        # in case developer name already exists
+        # in case purchase  already exists
         flash('Error: Purchase Doesnt exists.')
-    # redirect to the developers page
+    # redirect to the purchase page
     return redirect(url_for('home.list_purchases'))
 
 
@@ -699,7 +683,7 @@ def delete_purchase(order_id):
 @login_required
 def list_reviews():
     """
-    List all developers
+    List all reviews
     """
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
@@ -758,7 +742,7 @@ def add_review_under_user_app(apple_id):
 @login_required
 def add_review(apple_id, package_name):
     """
-    Add a developer to the database
+    Add a review to the database
     """
     add_review = True
 
@@ -785,14 +769,14 @@ def add_review(apple_id, package_name):
             print("COMPLETED!!!")
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+
             flash('Error: Review cant be added.')
 
-            # redirect to developers page
+
         return redirect(url_for('home.list_reviews'))
 
-    #flash("DonE!!!!")
-    # load developer template
+
+    # load review template
     return render_template('home/reviews/review.html', action="Add",
                            add_review=add_review, form=form,
                            title="Add Review")
@@ -802,7 +786,7 @@ def add_review(apple_id, package_name):
 @login_required
 def edit_review(apple_id, package_name):
     """
-    Edit a developer
+    Edit a review
     """
     add_review = True
 
@@ -811,8 +795,7 @@ def edit_review(apple_id, package_name):
 
     if form.validate_on_submit():
         try:
-            #print(pk)
-            # add developer to the database
+
             db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
             cur = db.cursor()
@@ -828,13 +811,13 @@ def edit_review(apple_id, package_name):
             db.close()
 
             flash('You have successfully Edited the Review.')
-            #print("COMPLETED!!!")
+
         except (MySQLdb.Error, MySQLdb.Warning) as e:
             print(e)
-            # in case developer name already exists
+         
             flash('Error: Could Not Update Review')
 
-            # redirect to developers page
+           
         return redirect(url_for('home.list_reviews'))
 
     db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
@@ -847,8 +830,6 @@ def edit_review(apple_id, package_name):
     review = cur.fetchone()
 
     db.close()
-
-    print("ROW:", review)
     
     form.comment.data = review[3]
     form.rating.data = review[2]
@@ -862,11 +843,10 @@ def edit_review(apple_id, package_name):
 @login_required
 def delete_review(apple_id, package_name):
     """
-    Delete a developer from the database
+    Delete a review from the database
     """
     try:
-        #print(pk)
-        # add developer to the database
+
         db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
 
         cur = db.cursor()
@@ -878,10 +858,9 @@ def delete_review(apple_id, package_name):
         db.close()
 
         flash('You have successfully deleted a review.')
-        #print("COMPLETED!!!")
+ 
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
-        # in case developer name already exists
+ 
         flash('Error: Review Doesnt exists.')
-    # redirect to the developers page
     return redirect(url_for('home.list_reviews'))
