@@ -20,25 +20,15 @@
               <thead>
                 <tr>
                   <th width="25%"> Package Name </th>
-                  <th width="25%"> Name </th>
-                  <th width="25%">Price</th>
                 </tr>
               </thead>
               <tbody>
               {% for app in applications %}
                 <tr>
                   <td>
-                    <a href="{{ url_for('home.add_purchase', apple_id=apple_id, package_name=app.0, price=app.2) }}">
+                    <a href="{{ url_for('home.add_review', apple_id=apple_id, package_name=app.0) }}">
                       <i class="fa fa-pencil"></i> {{ app.0 }} 
                     </a>
-                  </td>
-                  <td>
-                    <a href="{{ url_for('home.add_purchase', apple_id=apple_id, package_name=app.0, price=app.2) }}">
-                      <i class="fa fa-pencil"></i> {{ app.1 }} 
-                    </a>
-                  </td>
-                  <td>
-                      {{ app.2 }} 
                   </td>
                 </tr>
               {% endfor %}

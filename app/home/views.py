@@ -8,7 +8,7 @@ import random
 
 
 from . import home
-from .forms import DeveloperForm, ApplicationForm, UserForm, PurchaseForm
+from .forms import DeveloperForm, ApplicationForm, UserForm, PurchaseForm, ReviewForm
 
 
 @home.route('/')
@@ -605,7 +605,10 @@ def add_purchase_under_user_app(apple_id):
 
     cur = db.cursor()
 
-    query_string = "SELECT * from applications;"
+    query_string = "SELECT a.package_name, a.name, a.price from \
+                    applications a \
+                    where not exists (select * from purchases where apple_id = '{}' and app = a.package_name) \
+                    ;".format(apple_id)
     cur.execute(query_string)
 
     applications = cur.fetchall()
@@ -690,3 +693,195 @@ def delete_purchase(order_id):
         flash('Error: Purchase Doesnt exists.')
     # redirect to the developers page
     return redirect(url_for('home.list_purchases'))
+
+
+@home.route('/reviews', methods=['GET', 'POST'])
+@login_required
+def list_reviews():
+    """
+    List all developers
+    """
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from reviews;"
+    cur.execute(query_string)
+
+    reviews = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('home/reviews/reviews.html',
+                           reviews=reviews, title="Reviews")
+
+
+@home.route('/reviews/add/user', methods=['GET', 'POST'])
+@login_required
+def add_review_under_user():
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from users;"
+    cur.execute(query_string)
+
+    users = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('/home/reviews/users_compact.html',
+                           users=users, title="Users")
+
+
+@home.route('/reviews/add/user/<string:apple_id>/app', methods=['GET', 'POST'])
+@login_required
+def add_review_under_user_app(apple_id):
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT app from purchases where apple_id = '{}'".format(apple_id)
+    cur.execute(query_string)
+
+    applications = cur.fetchall()
+
+    db.close()
+
+
+    return render_template('/home/reviews/applications_compact.html',
+                           applications=applications, apple_id=apple_id, title="applications")
+
+@home.route('/reviews/add/user/<string:apple_id>/app/<string:package_name>', methods=['GET', 'POST'])
+@login_required
+def add_review(apple_id, package_name):
+    """
+    Add a developer to the database
+    """
+    add_review = True
+
+    form = ReviewForm()
+
+    if form.validate_on_submit():
+        try:
+
+            db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+            cur = db.cursor()
+
+            query_string = "INSERT INTO reviews \
+                            VALUES(%s, %s, %s, %s);"
+
+            cur.execute(query_string, (apple_id, 
+                                       package_name,
+                                       form.rating.data,
+                                       form.comment.data))
+            db.commit()
+            db.close()
+
+            flash('You have successfully added a new review.')
+            print("COMPLETED!!!")
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            # in case developer name already exists
+            flash('Error: Review cant be added.')
+
+            # redirect to developers page
+        return redirect(url_for('home.list_reviews'))
+
+    #flash("DonE!!!!")
+    # load developer template
+    return render_template('home/reviews/review.html', action="Add",
+                           add_review=add_review, form=form,
+                           title="Add Review")
+
+
+@home.route('/reviews/edit/user/<string:apple_id>/app/<string:package_name>', methods=['GET', 'POST'])
+@login_required
+def edit_review(apple_id, package_name):
+    """
+    Edit a developer
+    """
+    add_review = True
+
+    form = ReviewForm()
+
+
+    if form.validate_on_submit():
+        try:
+            #print(pk)
+            # add developer to the database
+            db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+            cur = db.cursor()
+
+            query_string = "UPDATE reviews SET \
+                            rating = %s, comment = %s \
+                            WHERE user = %s and app = %s"
+            cur.execute(query_string, (form.rating.data,
+                                        form.comment.data, 
+                                        apple_id,
+                                        package_name))
+            db.commit()
+            db.close()
+
+            flash('You have successfully Edited the Review.')
+            #print("COMPLETED!!!")
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            # in case developer name already exists
+            flash('Error: Could Not Update Review')
+
+            # redirect to developers page
+        return redirect(url_for('home.list_reviews'))
+
+    db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+    cur = db.cursor()
+
+    query_string = "SELECT * from reviews WHERE user = '{}' and app = '{}';".format(apple_id, package_name)
+    cur.execute(query_string)
+
+    review = cur.fetchone()
+
+    db.close()
+
+    print("ROW:", review)
+    
+    form.comment.data = review[3]
+    form.rating.data = review[2]
+
+    return render_template('home/reviews/review.html', action="Edit",
+                           add_review=add_review, form=form,
+                           review=review, title="Edit Review")
+
+
+@home.route('/reviews/delete/user/<string:apple_id>/app/<string:package_name>', methods=['GET', 'POST'])
+@login_required
+def delete_review(apple_id, package_name):
+    """
+    Delete a developer from the database
+    """
+    try:
+        #print(pk)
+        # add developer to the database
+        db = MySQLdb.connect("localhost", 'AppstoreDB', 'appstore12345', 'Appstore')
+
+        cur = db.cursor()
+
+        query_string = "DELETE FROM reviews WHERE user='{}' and app = '{}'".format(apple_id, package_name);
+
+        cur.execute(query_string)
+        db.commit()
+        db.close()
+
+        flash('You have successfully deleted a review.')
+        #print("COMPLETED!!!")
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        # in case developer name already exists
+        flash('Error: Review Doesnt exists.')
+    # redirect to the developers page
+    return redirect(url_for('home.list_reviews'))

@@ -44,3 +44,9 @@ class UserForm(FlaskForm):
 class PurchaseForm(FlaskForm):
     purchase_date = DateTimeField('Purchase Date', validators=[DataRequired()], format='%Y-%m-%d')
     submit = SubmitField('Submit')
+
+
+class ReviewForm(FlaskForm):
+    rating = FloatField('Rating', validators=[InputRequired(), NumberRange(min=0, max=5)])
+    comment = StringField('Comment', validators=[])
+    submit = SubmitField('Submit')
