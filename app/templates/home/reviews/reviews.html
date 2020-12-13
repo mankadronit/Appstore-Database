@@ -15,7 +15,7 @@
         <h1 style="text-align:center;">App Reviews</h1>
         {% if reviews %}
           <hr class="intro-divider">
-          <div class="center" style="margin-left:100px;margin-right:100px;">
+          <div class="center" style="margin-left:350px;margin-right:100px;">
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
@@ -35,12 +35,12 @@
                   <td> {{ review.2 }} </td>
                   <td> {{ review.3 }} </td>
                   <td>
-                    <a href="{{ url_for('home.edit_review', apple_id=review.0, package_name=review.1) }}">
+                    <a href="{{ url_for('home.edit_review', apple_id=review.0, package_name=review.1) }}" style="color:mediumslateblue;">
                       <i class="fa fa-pencil"></i> Edit 
                     </a>
                   </td>
                   <td>
-                    <a href="{{ url_for('home.delete_review', apple_id=review.0, package_name=review.1) }}">
+                    <a href="{{ url_for('home.delete_review', apple_id=review.0, package_name=review.1) }}" style="color:mediumslateblue;">
                       <i class="fa fa-trash"></i> Delete 
                     </a>
                   </td>
@@ -55,7 +55,7 @@
             <h3> No Reviews have been added. </h3>
             <hr class="intro-divider">
         {% endif %}
-          <a href="{{ url_for('home.add_review_under_user') }}" class="btn btn-default btn-lg">
+          <a href="{{ url_for('home.add_review_under_user') }}" class="btn btn-default btn-lg" style="color:mediumslateblue; border-color: indigo;">
             <i class="fa fa-plus"></i>
             Add Review
           </a>
